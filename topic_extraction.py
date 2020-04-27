@@ -4,6 +4,10 @@ from nltk.stem import WordNetLemmatizer, SnowballStemmer
 from collections import OrderedDict, Counter
 import sys
 import math
+from nltk.parse.corenlp import CoreNLPDependencyParser
+from nltk.parse.dependencygraph import DependencyGraph
+
+parser = CoreNLPDependencyParser(url='http://localhost:9000')
 
 sentence = sys.argv[1]
 
@@ -43,6 +47,10 @@ print(cnt)
 tf_idfs = {}
 for word in sentence.split(' '):
     preprocessed_word = preprocess(word)
+    parse, = parser.raw_parse(sentence)
+    conll = parse.to_conll(4)
+    dg = DependencyGraph(conll)
+    print(conll)
     if preprocessed_word:
         dfi = cnt[preprocessed_word[0]]
         if dfi:
