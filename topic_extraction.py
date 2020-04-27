@@ -1,13 +1,23 @@
+import sys
+if len(sys.argv) < 2:
+    print("Usage help: ")
+    print("python topic_extraction.py 'sentence_to_parse' ")
+    sys.exit()
+
 import pandas as pd
 import gensim
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
 from collections import OrderedDict, Counter
-import sys
 import math
 from nltk.parse.corenlp import CoreNLPDependencyParser
 from nltk.parse.dependencygraph import DependencyGraph
+import sys
+import nltk
 
+
+nltk.download('wordnet')
 parser = CoreNLPDependencyParser(url='http://localhost:9000')
+
 
 sentence = sys.argv[1]
 
@@ -45,12 +55,14 @@ print(cnt)
 
 # Getting TF-IDF value per word
 tf_idfs = {}
+
+parse, = parser.raw_parse(sentence)
+conll = parse.to_conll(4)
+dg = DependencyGraph(conll)
+print(conll)
+
 for word in sentence.split(' '):
     preprocessed_word = preprocess(word)
-    parse, = parser.raw_parse(sentence)
-    conll = parse.to_conll(4)
-    dg = DependencyGraph(conll)
-    print(conll)
     if preprocessed_word:
         dfi = cnt[preprocessed_word[0]]
         if dfi:
